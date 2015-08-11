@@ -1,0 +1,13 @@
+body {
+	max-width: 40em;
+}
+
+#toolbar>header>ul {
+	margin: 0;
+	padding: 0;
+	list-style-type: none;
+	overflow: hidden;
+}
+#toolbar>header>ul>li {
+	float: left;
+}
