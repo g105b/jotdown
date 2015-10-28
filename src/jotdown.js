@@ -18,12 +18,12 @@ var
 		"h6": "Heading 6",
 		"p": "Paragraph",
 		
-		"quote": "Quote",
-		"code": "Code",
-		"ul": "Bullets",
-		"ol": "Numbers",
-		"increaseIndent": "Incease indent",
-		"decreaseIndent": "Decrease indent",
+		"blockquote": "Quote",
+		"pre": "Code",
+		"insertUnorderedList": "Bullets",
+		"insertOrderedList": "Numbers",
+		"indent": "Incease indent",
+		"outdent": "Decrease indent",
 
 		"undo": "Undo",
 		"redo": "Redo",
@@ -34,6 +34,15 @@ var
 		"h1",
 		"quote",
 		"undo",
+	],
+
+	toolbarCommandBlocks = [
+		"h1", "h2", "h3", "h4", "h5", "h6", 
+		"p",
+		"blockquote",
+		"code",
+		"ul",
+		"ol",
 	],
 
 $$;
@@ -72,6 +81,7 @@ function createEditor(textarea) {
 
 	jotdownEditor.innerHTML = textarea.value;
 	jotdownEditor.setAttribute("contenteditable", true);
+	jotdownEditor.addEventListener("focus", e_focus_editor);
 
 	if(textarea.hasAttribute("autofocus")) {
 		jotdownEditor.focus();
@@ -94,6 +104,8 @@ function createToolbar(editor) {
 		button.title = toolbarCommandMap[command];
 		button.setAttribute("data-command", command);
 
+		button.addEventListener("click", e_click_button);
+
 		if(!separator
 		|| toolbarCommandSpacers.indexOf(command) >= 0) {
 			separator = document.createElement("div");
@@ -107,6 +119,29 @@ function createToolbar(editor) {
 
 	editor.parentNode.insertBefore(toolbar, editor);
 	return toolbar;
+}
+
+function e_click_button(e) {
+	e.preventDefault();
+
+	var 
+		command = this.getAttribute("data-command"),
+	$$;
+
+	this.blur();
+
+	if(toolbarCommandBlocks.indexOf(command) >= 0) {
+		document.execCommand("formatBlock", false, command);
+	}
+	else {
+		document.execCommand(command);		
+	}
+
+	activeEditor.focus();
+}
+
+function e_focus_editor(e) {
+	activeEditor = this;
 }
 
 });//#
