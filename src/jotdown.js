@@ -4,6 +4,20 @@ var
 	activeEditor = null,
 	toolbar = null,
 
+	markdownPatternMap = {
+		"block": {
+			"h1": "^\\s*#\\s*(\\w+)",
+			"h2": "^\\s*##\\s*(\\w+)",
+			"h3": "^\\s*###\\s*(\\w+)",
+			"h4": "^\\s*####\\s*(\\w+)",
+			"h5": "^\\s*#####\\s*(\\w+)",
+			"h6": "^\\s*######\\s*(\\w+)",
+		},
+		"inline": {
+			"b": "\\*\\*([^\\*]+)\\*\\*"
+		}
+	},
+
 	toolbarCommandMap = {
 		"bold": "Bold",
 		"italic": "Italic",
@@ -125,16 +139,45 @@ function createToolbar(editor) {
 }
 
 function parseMarkdown(node) {
+	var
+		matchType,
+		nodeType,
+		regexp,
+		originalHTML,
+		matches,
+		inlineNode,
+	$$;
+
 	if(!node) {
 		return;
 	}
 
-	if(node.innerHTML.trim().match(/^\s*#\s*\w+/)) {
-		node.innerText = node.innerText.replace(/^(\s*#\s*)+/, "");
-		node = changeNodeType(node, "h1");
-		setTimeout(function() {
-			moveSelection(node.nextElementSibling);
-		}, 0);
+	for(nodeType in markdownPatternMap.block) {
+		regexp = new RegExp(markdownPatternMap.block[nodeType]);
+
+		if(node.innerHTML.trim().match(regexp)) {
+			originalHTML = node.innerHTML;
+			node.innerText = node.innerText.replace(regexp, "$1");
+			node = changeNodeType(node, nodeType);
+			node.setAttribute("data-original-html", originalHTML);
+
+			setTimeout(function() {
+				moveSelection(node.nextElementSibling);
+			}, 0);
+		}
+	}
+
+	for(nodeType in markdownPatternMap.inline) {
+		regexp = new RegExp(markdownPatternMap.inline[nodeType]);
+
+		while(matches = node.innerHTML.match(regexp)) {
+			inlineNode = document.createElement(nodeType);
+			inlineNode.innerText = matches[1];
+			// Remove the text:
+			node.innerHTML = node.innerHTML.substr(0, matches.index)
+				+ inlineNode.outerHTML
+				+ node.innerHTML.substr(matches.index + matches[0].length);
+		}
 	}
 }
 
@@ -157,7 +200,8 @@ function mutate(mutationRecord) {
 		$$;
 
 		if(node.nodeName === "#text"
-		|| node.nodeName === "BR") {
+		|| node.nodeName === "BR"
+		|| node.nodeName === "B") {
 			return;
 		}
 
