@@ -2,3 +2,23 @@
  * This CSS file is only for styling the generated content from jotdown.js
  * Any actual styling of the page is outside of the responsibility of jotdown.
  */
+
+textarea[data-jotdown] {
+	display: none;
+}
+
+jotdown-editor {
+	display: block;
+	margin: 0;
+	padding: 0.5rem;
+	width: 100%;
+	max-width: 40em;
+	border: 1px solid #aaa;
+	border-radius: 4px;
+	cursor: text;
+	outline: none;
+}
+
+jotdown-toolbar {
+	
+}
