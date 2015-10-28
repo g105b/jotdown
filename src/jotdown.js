@@ -17,7 +17,7 @@ var
 		"h4": "Heading 4",
 		"h5": "Heading 5",
 		"h6": "Heading 6",
-		
+
 		"blockquote": "Quote",
 		"pre": "Code",
 		"insertUnorderedList": "Bullets",
@@ -38,7 +38,7 @@ var
 
 	toolbarCommandBlocks = [
 		"p",
-		"h1", "h2", "h3", "h4", "h5", "h6", 
+		"h1", "h2", "h3", "h4", "h5", "h6",
 		"blockquote",
 		"code",
 		"ul",
@@ -56,7 +56,7 @@ $$;
 })();
 
 function convertTextarea(textarea) {
-	var 
+	var
 		editor = createEditor(textarea),
 		toolbar = createToolbar(editor);
 	$$;
@@ -65,6 +65,8 @@ function convertTextarea(textarea) {
 	editor.jotdownToolbar = toolbar;
 	toolbar.jotdownEditor = editor;
 	textarea.jotdownEditor = editor;
+
+	attachListeners(editor);
 }
 
 function createEditor(textarea) {
@@ -82,6 +84,7 @@ function createEditor(textarea) {
 	jotdownEditor.innerHTML = textarea.value;
 	jotdownEditor.setAttribute("contenteditable", true);
 	jotdownEditor.addEventListener("focus", e_focus_editor);
+	activeEditor = jotdownEditor;
 
 	if(textarea.hasAttribute("autofocus")) {
 		jotdownEditor.focus();
@@ -121,10 +124,86 @@ function createToolbar(editor) {
 	return toolbar;
 }
 
+function attachListeners(editor) {
+	var
+		observer = new MutationObserver(e_mutate),
+	$$;
+
+	observer.observe(editor, {
+		childList: true,
+		subtree: true,
+	});
+}
+
+function mutate(mutationRecord) {
+	[].forEach.call(mutationRecord.addedNodes, function(node) {
+		var
+			highestNode = node,
+			changed = false,
+		$$;
+
+		if(node.nodeName === "#text"
+		|| node.nodeName === "BR") {
+			return;
+		}
+
+		if(node.nodeName === "DIV") {
+			node = changeNodeType(node, "P");
+		}
+
+		if(node.nodeName !== "LI") {
+			while(highestNode.parentNode
+			&& highestNode.parentNode !== activeEditor
+			) {
+				// Set highestNode to the ancestor of node that is the child
+				// of activeEditor.
+				highestNode = highestNode.parentNode;
+				changed = true;
+			}
+		}
+
+		if(changed) {
+			activeEditor.insertBefore(node, highestNode.nextSibling);
+		}
+
+		activeEditor.focus();
+		moveSelection(node);
+	});
+}
+
+function changeNodeType(node, newNodeType) {
+	var
+		newNodeType = newNodeType.toLowerCase(),
+		newNode = document.createElement(newNodeType),
+	$$;
+
+	newNode.innerHTML = node.innerHTML;
+	node.parentElement.replaceChild(newNode, node);
+
+	return newNode;
+}
+
+function moveSelection(node, end) {
+	var
+		end = !!end,
+		range = document.createRange(),
+		sel = window.getSelection(),
+	$$;
+
+	range.setStart(node, 1);
+	range.collapse(true);
+	sel.removeAllRanges();
+	sel.addRange(range);
+}
+
+function e_mutate(mutationRecordArray) {
+	mutationRecordArray.forEach(mutate);
+}
+
 function e_click_button(e) {
 	e.preventDefault();
 
-	var 
+	var
 		command = this.getAttribute("data-command"),
 	$$;
 
@@ -134,7 +213,7 @@ function e_click_button(e) {
 		document.execCommand("formatBlock", false, command);
 	}
 	else {
-		document.execCommand(command);		
+		document.execCommand(command);
 	}
 
 	activeEditor.focus();
