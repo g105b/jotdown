@@ -124,6 +124,18 @@ function createToolbar(editor) {
 	return toolbar;
 }
 
+function parseMarkdown(node) {
+	if(!node) {
+		return;
+	}
+
+	if(node.innerHTML.trim().match(/^\s*#\s*\w+/)) {
+		node.innerText = node.innerText.replace(/^(\s*#\s*)+/, "");
+		changeNodeType(node, "h1");
+		moveSelection(node.nextElementSibling);
+	}
+}
+
 function attachListeners(editor) {
 	var
 		observer = new MutationObserver(e_mutate),
@@ -161,6 +173,8 @@ function mutate(mutationRecord) {
 				changed = true;
 			}
 		}
+
+		parseMarkdown(node.previousElementSibling);
 
 		if(changed) {
 			activeEditor.insertBefore(node, highestNode.nextSibling);
