@@ -10,13 +10,13 @@ var
 		"strikethrough": "Strike through",
 		"link": "Link",
 
+		"p": "Paragraph",
 		"h1": "Heading 1",
 		"h2": "Heading 2",
 		"h3": "Heading 3",
 		"h4": "Heading 4",
 		"h5": "Heading 5",
 		"h6": "Heading 6",
-		"p": "Paragraph",
 		
 		"blockquote": "Quote",
 		"pre": "Code",
@@ -31,14 +31,14 @@ var
 
 	// These items will start new containers:
 	toolbarCommandSpacers = [
-		"h1",
+		"p",
 		"quote",
 		"undo",
 	],
 
 	toolbarCommandBlocks = [
-		"h1", "h2", "h3", "h4", "h5", "h6", 
 		"p",
+		"h1", "h2", "h3", "h4", "h5", "h6", 
 		"blockquote",
 		"code",
 		"ul",
