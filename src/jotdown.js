@@ -14,7 +14,9 @@ var
 			"h6": "^\\s*######\\s*(\\w+)",
 		},
 		"inline": {
-			"b": "\\*\\*([^\\*]+)\\*\\*"
+			"b": "\\*\\*([^\\*]+)\\*\\*",
+			"i": "_([^_]+)_",
+			"strike": "---([^-]+)---",
 		}
 	},
 
@@ -201,7 +203,9 @@ function mutate(mutationRecord) {
 
 		if(node.nodeName === "#text"
 		|| node.nodeName === "BR"
-		|| node.nodeName === "B") {
+		|| node.nodeName === "B"
+		|| node.nodeName === "I"
+		|| node.nodeName === "STRIKE") {
 			return;
 		}
 
