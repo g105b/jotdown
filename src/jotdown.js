@@ -131,8 +131,10 @@ function parseMarkdown(node) {
 
 	if(node.innerHTML.trim().match(/^\s*#\s*\w+/)) {
 		node.innerText = node.innerText.replace(/^(\s*#\s*)+/, "");
-		changeNodeType(node, "h1");
-		moveSelection(node.nextElementSibling);
+		node = changeNodeType(node, "h1");
+		setTimeout(function() {
+			moveSelection(node.nextElementSibling);
+		}, 0);
 	}
 }
 
