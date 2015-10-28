@@ -2,6 +2,33 @@
 
 var
 	activeEditor = null,
+	toolbar = null,
+
+	toolbarCommandMap = {
+		"bold": "Bold",
+		"italic": "Italic",
+		"strikethrough": "Strike through",
+		"link": "Link",
+
+		"h1": "Heading 1",
+		"h2": "Heading 2",
+		"h3": "Heading 3",
+		"h4": "Heading 4",
+		"h5": "Heading 5",
+		"h6": "Heading 6",
+		"p": "Paragraph",
+		
+		"quote": "Quote",
+		"code": "Code",
+		"ul": "Bullets",
+		"ol": "Numbers",
+		"increaseIndent": "Incease indent",
+		"decreaseIndent": "Decrease indent",
+
+		"undo": "Undo",
+		"redo": "Redo",
+	},
+
 $$;
 
 (function go() {
@@ -14,14 +41,17 @@ $$;
 
 function convertTextarea(textarea) {
 	var 
-		jotdownElement = createJotdown(textarea),
+		editor = createEditor(textarea),
+		toolbar = createToolbar(editor);
 	$$;
 
-	// Create part two of the two-way element link.
-	textarea.jotdownElement = jotdownElement;
+	// Create the two-way element links.
+	editor.jotdownToolbar = toolbar;
+	toolbar.jotdownEditor = editor;
+	textarea.jotdownEditor = editor;
 }
 
-function createJotdown(textarea) {
+function createEditor(textarea) {
 	var
 		jotdownEditor = document.createElement("jotdown-editor"),
 		jotdownToolbar = document.createElement("jotdown-toolbar"),
@@ -41,6 +71,28 @@ function createJotdown(textarea) {
 	}
 
 	return jotdownEditor;
+}
+
+function createToolbar(editor) {
+	var
+		toolbar = document.createElement("jotdown-toolbar"),
+		command,
+		button,
+	$$;
+
+	for(command in toolbarCommandMap) {
+		button = document.createElement("button");
+		button.textContent = toolbarCommandMap[command];
+		button.title = toolbarCommandMap[command];
+		button.setAttribute("data-command", command);
+
+		toolbar.appendChild(button);
+	}
+
+	toolbar.jotdownEditor = editor;
+
+	editor.parentNode.insertBefore(toolbar, editor);
+	return toolbar;
 }
 
 });//#
