@@ -29,6 +29,13 @@ var
 		"redo": "Redo",
 	},
 
+	// These items will start new containers:
+	toolbarCommandSpacers = [
+		"h1",
+		"quote",
+		"undo",
+	],
+
 $$;
 
 (function go() {
@@ -76,6 +83,7 @@ function createEditor(textarea) {
 function createToolbar(editor) {
 	var
 		toolbar = document.createElement("jotdown-toolbar"),
+		separator,
 		command,
 		button,
 	$$;
@@ -86,7 +94,13 @@ function createToolbar(editor) {
 		button.title = toolbarCommandMap[command];
 		button.setAttribute("data-command", command);
 
-		toolbar.appendChild(button);
+		if(!separator
+		|| toolbarCommandSpacers.indexOf(command) >= 0) {
+			separator = document.createElement("div");
+			toolbar.appendChild(separator);
+		}
+
+		separator.appendChild(button);
 	}
 
 	toolbar.jotdownEditor = editor;
