@@ -1,6 +1,3 @@
-# Jotdown
-Rich text editor for Markdown
-
 # What does Jotdown do?
 There are two main features that Jotdown aims to achieve:
 
